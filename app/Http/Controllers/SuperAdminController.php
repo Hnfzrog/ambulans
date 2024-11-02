@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pasien;
+use App\Models\Biaya;
+use App\Models\User;
+use App\Models\Jadwal;
 
 class SuperAdminController extends Controller
 {
@@ -11,38 +15,96 @@ class SuperAdminController extends Controller
         return view('superadmin.dashboard');
     }
 
-    public function pasienIndex()
+    public function pasienIndex(Request $request)
     {
-        return view('superadmin.pasien.index');
+        $search = $request->get('search');
+        $patients = Pasien::when($search, function ($query) use ($search) {
+            $query->where('nama', 'like', "%{$search}%");
+        })->paginate(10);
+    
+        return view('superadmin.pasien', compact('patients'));
     }
 
     public function pasienCreate()
     {
-        return view('superadmin.pasien.create');
+        $drivers = User::where('role', 'admin')->get();
+        $coordinators = User::where('role', 'superAdmin')->get();
+        return view('superadmin.pasien_create', compact('drivers', 'coordinators'));
     }
 
-    public function biayaIndex()
+    public function biayaIndex(Request $request)
     {
-        return view('superadmin.biaya.index');
+        $search = $request->get('search');
+        $tanggal = $request->get('tanggal'); // Get the date input if available
+
+        $biayaOperasional = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Search by description
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Search by date
+        })->paginate(10);
+    
+        return view('superadmin.biaya', compact('biayaOperasional'));
     }
 
     public function biayaCreate()
     {
-        return view('superadmin.biaya.create');
+        $drivers = User::where('role', 'admin')->get();
+        $coordinators = User::where('role', 'superAdmin')->get();
+
+        return view('superadmin.biaya_create', compact('drivers', 'coordinators'));
     }
 
-    public function jadwalIndex()
+    public function jadwalIndex(Request $request)
     {
-        return view('superadmin.jadwal.index');
-    }
+        $tanggal = $request->get('tanggal');
+        $tujuan = $request->get('tujuan');
+    
+        $jadwal = Jadwal::when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal);
+        })
+        ->when($tujuan, function ($query) use ($tujuan) {
+            $query->where('tujuan', 'like', "%{$tujuan}%");
+        })
+        ->paginate(10);
+    
+        return view('superadmin.jadwal', compact('jadwal', 'tanggal', 'tujuan'));
+    }    
 
     public function jadwalCreate()
     {
-        return view('superadmin.jadwal.create');
+        $drivers = User::where('role', 'admin')->get();
+        return view('superadmin.jadwal_create', compact('drivers'));
     }
 
     public function createUser()
     {
         return view('superadmin.user.create');
+    }
+
+    public function userIndex(Request $request)
+    {
+        $search = $request->get('search');
+        $users = User::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        })->paginate(10);
+        
+        return view('superadmin.user', compact('users'));
+    }    
+
+    public function updateUserRole(Request $request, User $user)
+    {
+        // Prevent role update for user with id = 3
+        if ($user->id == 3) {
+            return redirect()->route('superadmin.userIndex')->with('error', 'Cannot modify the role of this user.');
+        }
+
+        $request->validate([
+            'role' => 'required|in:admin,superAdmin',
+        ]);
+
+        $user->role = $request->role;
+        $user->save();
+
+        return redirect()->route('superadmin.userIndex')->with('success', 'User role updated successfully.');
     }
 }

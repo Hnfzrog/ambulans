@@ -26,15 +26,16 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.biaya.store') }}" method="POST">
+    <form action="{{ route('superadmin.biaya.store') }}" method="POST">
         @csrf
+
         <div class="mb-3">
-            <label for="tanggal" class="form-label">Tanggal</label>
-            <input type="date" name="tanggal" class="form-control" id="tanggal" required>
+            <label for="formGroupExampleInput" class="form-label">Tanggal</label>
+            <input type="date" name="tanggal" class="form-control" id="formGroupExampleInput" required>
         </div>
-        
+
         <div class="row g-3">
-            <div class="col-md mb-3">
+            <div class="col-md">
                 <label for="id_kru" class="form-label">ID Kru</label>
                 <select id="id_kru" name="id_kru" class="form-select" required>
                     <option value="" disabled selected>Pilih Driver</option>
@@ -46,7 +47,7 @@
                     <div class="text-danger">{{ $message }}</div>
                 @enderror
             </div>
-            <div class="col-md mb-3">
+            <div class="col-md">
                 <label for="id_koordinator" class="form-label">ID Koordinator</label>
                 <select id="id_koordinator" name="id_koordinator" class="form-select" required>
                     <option value="" disabled selected>Pilih Koordinator</option>
@@ -67,7 +68,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-        
+
         <div class="mb-3">
             <label for="uang_masuk" class="form-label">Uang Masuk</label>
             <input type="number" name="uang_masuk" class="form-control" id="uang_masuk" placeholder="Rp." required>
@@ -75,7 +76,7 @@
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-        
+
         <div class="mb-3">
             <label for="uang_keluar" class="form-label">Uang Keluar</label>
             <input type="number" name="uang_keluar" class="form-control" id="uang_keluar" placeholder="Rp." required>
@@ -84,9 +85,9 @@
             @enderror
         </div>
 
-        <div class="d-flex justify-content-between mb-4">
+        <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('admin.biaya') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route('superadmin.biaya') }}" class="btn btn-secondary">Kembali</a>
         </div>
     </form>
 </div>

@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
 <style>
     body {
         background-color: #f8f9fa; /* Light background for contrast */
@@ -16,9 +15,6 @@
         border-radius: 0.5rem; /* Rounded corners for the table */
         overflow: hidden; /* Prevent overflow of borders */
     }
-    .table th, .table td {
-        vertical-align: middle; /* Center content vertically */
-    }
     .btn-custom {
         transition: background-color 0.3s, transform 0.2s; /* Smooth transition for buttons */
     }
@@ -30,19 +26,28 @@
         background-color: #e9ecef; /* Highlight row on hover */
     }
 </style>
-
 <div class="container mt-4">
     <h1 class="text-center mb-4">Jadwal Operasional</h1>
-
-    <div class="mb-4">
-
-        <form method="GET" action="{{ route('admin.jadwal') }}" class="d-flex">
-            <input type="text" name="tujuan" class="form-control" value="{{ request('tujuan') }}" placeholder="Filter by Tujuan">&nbsp;
-            <input type="date" name="tanggal" class="form-control" value="{{ request('tanggal') }}" placeholder="Filter by Tanggal">&nbsp;
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </form>
+    
+    <div class="d-flex justify-content-between mb-4">
+        <a href="{{ route('superadmin.jadwal.create') }}" class="btn btn-primary">+ Tambah Data jadwal</a>
+        <a href="{{ route('superadmin.jadwal.export') }}" class="btn btn-success">Cetak Jadwal Operasional</a>
     </div>
 
+    <div class="mb-4">
+        <form method="GET" action="{{ route('superadmin.jadwal') }}" class="row g-2">
+            <div class="col-auto">
+                <input type="date" name="tanggal" value="{{ $tanggal }}" class="form-control" placeholder="Search by date">
+            </div>
+            <div class="col-auto">
+                <input type="text" name="tujuan" value="{{ $tujuan }}" class="form-control" placeholder="Cari berdasarkan tujuan">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">cari</button>
+            </div>
+        </form>
+    </div>
+    
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -51,16 +56,25 @@
                 <th>Pukul</th>
                 <th>Tujuan</th>
                 <th>Nama Kru</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach($jadwal as $index => $item)
                 <tr>
-                    <td>{{ $jadwal->firstItem() + $index }}</td>
+                    <td>{{ $index + 1 + ($jadwal->currentPage() - 1) * $jadwal->perPage() }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('j F Y') }}</td> <!-- Format date -->
                     <td>{{ \Carbon\Carbon::parse($item->pukul)->format('H:i') }}</td>
                     <td>{{ $item->tujuan }}</td>
                     <td>{{ optional($item->kru)->name ?? 'N/A' }}</td>
+                    <td>
+                        <a href="{{ route('superadmin.jadwal.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('superadmin.jadwal.destroy', $item->id) }}" method="POST" style="display:inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this schedule?')">Hapus</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

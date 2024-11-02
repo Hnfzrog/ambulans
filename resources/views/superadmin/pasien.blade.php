@@ -1,24 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- Custom Styles -->
 <style>
     body {
         background-color: #f8f9fa; /* Light background for contrast */
     }
-    h1 {
-        color: #343a40; /* Darker text for better readability */
-    }
-
     .container{
         min-height:70vh /* Light background for contrast */
+    }
+    h1 {
+        color: #343a40; /* Darker text for better readability */
     }
     .table {
         border-radius: 0.5rem; /* Rounded corners for the table */
         overflow: hidden; /* Prevent overflow of borders */
-    }
-    .table th, .table td {
-        vertical-align: middle; /* Center content vertically */
     }
     .btn-custom {
         transition: background-color 0.3s, transform 0.2s; /* Smooth transition for buttons */
@@ -32,19 +30,22 @@
     }
 </style>
 
-<h1 class="text-center mt-4 mb-4">Data Pasien</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Data Pasien</h1>
 
-<div class="container">
     @if (Auth::check() && Auth::user()->role === 'superadmin')
-        <a href="{{ route('admin.pasien.cetak')}}" class="btn btn-success mb-4">Cetak Data Pasien</a>
+    <div class="mb-4 d-flex justify-content-between">
+        <a href="{{ route('superadmin.pasien.create') }}" class="btn btn-primary btn-custom">+ Tambah Data Pasien</a>
+        <a href="{{ route('superadmin.pasien.export')}}" class="btn btn-success btn-custom">Cetak Data Pasien</a>
+    </div>
     @elseif(Auth::user()->role === 'admin')
-        <a href="{{ route('admin.pasien.create') }}" class="btn btn-primary mb-4">+ Tambah Data Pasien</a>
+        <a href="{{ route('superadmin.pasien.create') }}" class="btn btn-primary btn-custom mb-4">+ Tambah Data Pasien</a>
     @endif
     
-    <!-- Search form -->
-    <form method="GET" action="{{ route('admin.pasien') }}" class="mb-4">
+    <!-- Search Form -->
+    <form method="GET" action="{{ route('superadmin.pasien.index') }}" class="mb-4">
         <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Cari Nama Pasien" value="{{ request('search') }}">
+            <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan nama pasien" value="{{ request()->get('search') }}">
             <button class="btn btn-outline-secondary" type="submit">Cari</button>
         </div>
     </form>
@@ -68,7 +69,7 @@
             <tbody>
                 @foreach($patients as $index => $patient)
                     <tr>
-                        <td>{{ ($patients->currentPage() - 1) * $patients->perPage() + $index + 1 }}</td>
+                        <td>{{ $index + 1 + ($patients->currentPage() - 1) * $patients->perPage() }}</td>
                         <td>{{ \Carbon\Carbon::parse($patient->created_at)->locale('id')->translatedFormat('j F Y') }}</td>
                         <td>{{ optional($patient->kru)->name ?? 'N/A' }}</td>
                         <td>{{ optional($patient->koordinator)->name ?? 'N/A' }}</td>
@@ -78,14 +79,14 @@
                         <td>{{ $patient->keterangan }}</td>
                         <td>
                             @if($patient->photo)
-                                <a href="{{ asset('storage/' . $patient->photo) }}" target="_blank">Lihat Foto</a>
+                                <a href="{{ asset('storage/' . $patient->photo) }}" target="_blank" class="btn btn-link">Lihat Foto</a>
                             @else
                                 Tidak ada foto
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('admin.pasien.edit', $patient->id) }}" class="btn btn-success btn-sm">Edit</a>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $patient->id }}">
+                            <a href="{{ route('superadmin.pasien.edit', $patient->id) }}" class="btn btn-warning btn-sm btn-custom">Edit</a>
+                            <button type="button" class="btn btn-danger btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{ $patient->id }}">
                                 Hapus
                             </button>
                         </td>
@@ -95,7 +96,7 @@
         </table>
     </div>
 
-    <!-- Pagination links -->
+    <!-- Pagination Links -->
     <div class="d-flex justify-content-between mt-4">
         <div>
             Showing {{ $patients->firstItem() }} to {{ $patients->lastItem() }} of {{ $patients->total() }} entries
@@ -107,7 +108,7 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true" aria-modal="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -135,7 +136,7 @@
         deleteModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const patientId = button.getAttribute('data-id');
-            const action = `{{ url('/admin/pasien') }}/${patientId}`;
+            const action = `{{ url('/superadmin/pasien') }}/${patientId}`;
             document.getElementById('deleteForm').action = action;
         });
     });

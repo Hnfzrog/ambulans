@@ -11,10 +11,22 @@ class Pasien extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
+        'nama',
         'alamat',
         'tujuan',
         'keterangan',
         'photo',
+        'id_kru',
+        'id_koordinator',
     ];
+
+    public function kru()
+    {
+        return $this->belongsTo(User::class, 'id_kru');
+    }
+
+    public function koordinator()
+    {
+        return $this->belongsTo(User::class, 'id_koordinator');
+    }
 }

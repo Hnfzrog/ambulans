@@ -13,29 +13,49 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
     }
 
-    public function login(Request $request) {
-        $input = $request->all();
+    // Show the login form
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
 
-        $this -> validate($request, [
-            'email' => 'required | email',
-            'password' => 'required'
+    // Handle login request
+    // Handle login request
+    public function login(Request $request)
+    {
+        $this->validate($request, [
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
-    }
 
+        $input = $request->only('email', 'password');
+
+        if (auth()->attempt($input)) {
+            $user = auth()->user(); // Get the authenticated user
+            
+            return $this->authenticated($request, $user);
+        }
+        
+        return redirect()->back()->withErrors(['email' => 'Invalid credentials.'])->withInput($request->only('email', 'remember'));
+    }
+    
+    
     protected function authenticated(Request $request, $user)
     {
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif ($user->role === 'superadmin') {
-            return redirect()->route('superadmin.dashboard');
+        // Define a mapping of roles to routes
+        $roleRedirects = [
+            'admin' => 'admin.dashboard',
+            'superadmin' => 'superadmin.dashboard',
+        ];
+
+        if (array_key_exists($user->role, $roleRedirects)) {
+            return redirect()->route($roleRedirects[$user->role]);
         }
 
-        // Default redirection for other roles
-        return redirect('/home');
+        return redirect('/');
     }
+
+
 }
-
-

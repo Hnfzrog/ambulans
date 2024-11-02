@@ -14,5 +14,16 @@ class Jadwal extends Model
         'tanggal',
         'pukul',
         'tujuan',
+        'id_kru',
     ];
+
+    public function kru()
+    {
+        return $this->belongsTo(User::class, 'id_kru');
+    }
+
+    public function koordinator()
+    {
+        return $this->belongsTo(User::class, 'id_koordinator');
+    }
 }

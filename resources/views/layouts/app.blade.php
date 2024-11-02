@@ -1,192 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>Ambulans MWC NU Salam</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <link href="{{ asset('Ambulans/css/styles.css') }}" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            background-color: #f8f9fa;
+            margin: 0; /* Remove default body margin */
+        }
+        /* Sidebar styling */
+        .sb-sidenav {
+            background: #343a40;
+            height: 100vh;
+            padding: 1rem;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            transition: transform 0.3s ease;
+            position: fixed;
+            top: 56px; /* Height of navbar */
+            left: 0;
+            z-index: 1050;
+            transform: translateX(-100%);
+        }
+        .sb-sidenav.show {
+            transform: translateX(0);
+        }
+        .sb-sidenav .nav-link {
+            color: #ffffff;
+            transition: background 0.3s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .sb-sidenav .nav-link:hover {
+            background: #495057;
+            border-radius: 0.25rem;
+        }
+        .sb-nav-link-icon {
+            margin-right: 0.5rem;
+        }
+        /* Custom Toggler Button */
+        .custom-toggler {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 30px;
+            padding: 5px;
+        }
+        .custom-toggler .bar {
+            width: 100%;
+            height: 3px;
+            background-color: #fff;
+            margin: 4px 0;
+            transition: 0.4s;
+        }
+        .custom-toggler.active .bar:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .custom-toggler.active .bar:nth-child(2) {
+            opacity: 0;
+        }
+        .custom-toggler.active .bar:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s;
+            padding-top: 56px; /* Height of navbar */
+            flex-grow: 1; /* Allows the content to take up available space */
+            padding-bottom: 60px; /* Prevent content from hiding behind the footer */
+        }
+        /* Navbar and Footer styling */
+        .navbar {
+            background-color: #004d18 !important; /* Updated navbar background color */
+        }
+        footer {
+            background-color: #004d18 !important; /* Updated footer background color */
+            color: #ffffff;
+            text-align: center;
+            padding: 1rem;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+        }
+    </style>
 </head>
+<body>
 
-<body class="sb-nav-fixed">
-
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-        <!-- Sidebar Toggle-->
-        <button class="btn btn-link btn-sm order-1 order-lg-0 ms-2 me-4 me-lg-0" id="sidebarToggle" href="#!"><i
-                class="fas fa-bars"></i></button>
-        <!-- Navbar Brand-->
-        <a class="navbar-brand ps-3" href="">Dashboard</a>
-        <!-- Navbar Search-->
-        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..."
-                    aria-describedby="btnNavbarSearch" />
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i
-                        class="fas fa-search"></i></button>
-            </div>
-        </form>
-        <!-- Navbar-->
-        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-            <li class="nav-item dropdown">
-                @if (Auth::check())
-                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                    {{ Auth::user()->name }}
-                </a>
-
-                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" href="{{ route('logout') }}"
-                       onclick="event.preventDefault();
-                                     document.getElementById('logout-form').submit();">
-                        {{ __('Logout') }}
-                    </a>
-
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <button class="custom-toggler" type="button" id="sidebarToggle" aria-label="Toggle navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <a class="navbar-brand ms-2" href="{{ Auth::check() ? (Auth::user()->role === 'superadmin' ? route('superadmin.dashboard') : route('admin.dashboard')) : '#' }}">
+                Dashboard
+            </a>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
-                </div>
-            @else
-                        <li><a class="button" href="{{ route('auth.login') }}">Login</a></li>
-            @endif
-            </li>
-        </ul>
+                </li>
+            </ul>
+        </div>
     </nav>
 
-    <div id="layoutSidenav">
-        <div id="layoutSidenav_nav">
-            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                <div class="sb-sidenav-menu">
-                    <div class="nav">
-                        @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseDataPasien" aria-expanded="false" aria-controls="collapseDataPasien">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                                Data Pasien
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseDataPasien" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{{ route('admin.pasien') }}">Lihat data pasien</a>
-                                    <a class="nav-link" href="{{ route('admin.pasien.create') }}">Tambah data pasien</a>
-                                </nav>
-                            </div>
-                        @endif
-        
-                        @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseBiaya" aria-expanded="false" aria-controls="collapseBiaya">
-                                <div class="sb-nav-link-icon"><i class="fas fa-money-bill"></i></div>
-                                Biaya Operasional
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseBiaya" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{{ route('admin.biaya') }}">Lihat biaya operasional</a>
-                                    <a class="nav-link" href="{{ route('admin.biaya.create') }}">Tambah biaya operasional</a>
-                                </nav>
-                            </div>
-                        @endif
-        
-                        @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseJadwal" aria-expanded="false" aria-controls="collapseJadwal">
-                                <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
-                                Jadwal Operasional
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseJadwal" aria-labelledby="headingThree" data-bs-parent="#sidenavAccordion">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{{ route('admin.jadwal') }}">Lihat Jadwal operasional</a>
-                                    <a class="nav-link" href="{{ route('admin.jadwal.create') }}">Tambah Jadwal operasional</a>
-                                </nav>
-                            </div>
-                        @endif
-        
-                        @if (Auth::check() && (Auth::user()->role === 'superadmin'))
-                            <a class="nav-link" href="{{ route('superadmin.user.create') }}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-users-cog"></i></div>
-                                Lihat User
-                            </a>
-                        @endif
+    <div class="d-flex" id="navbarNav">
+        <!-- Sidenav -->
+        <div class="sb-sidenav accordion" id="sidenavAccordion">
+            <div class="nav flex-column">
+                @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
+                    <div class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#collapseDataPasien" aria-expanded="false" aria-controls="collapseDataPasien">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Data Pasien
+                            <div class="sb-sidenav-collapse-arrow ms-auto"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseDataPasien" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ Auth::user()->role === 'superadmin' ? route('superadmin.pasien') : route('admin.pasien') }}">Lihat data pasien</a>
+                                <a class="nav-link" href="{{ Auth::user()->role === 'superadmin' ? route('superadmin.pasien.create') : route('admin.pasien.create') }}">Tambah data pasien</a>
+                            </nav>
+                        </div>
                     </div>
-                </div>
-            </nav>
+                @endif
+    
+                @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
+                    <div class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#collapseBiaya" aria-expanded="false" aria-controls="collapseBiaya">
+                            <div class="sb-nav-link-icon"><i class="fas fa-money-bill"></i></div>
+                            Biaya Operasional
+                            <div class="sb-sidenav-collapse-arrow ms-auto"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseBiaya" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ Auth::user()->role === 'superadmin' ? route('superadmin.biaya') : route('admin.biaya') }}">Lihat biaya operasional</a>
+                                <a class="nav-link" href="{{ Auth::user()->role === 'superadmin' ? route('superadmin.biaya.create') : route('admin.biaya.create') }}">Tambah biaya operasional</a>
+                            </nav>
+                        </div>
+                    </div>
+                @endif
+    
+                @if (Auth::check() && (Auth::user()->role === 'admin' || Auth::user()->role === 'superadmin'))
+                    <div class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#collapseJadwal" aria-expanded="false" aria-controls="collapseJadwal">
+                            <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                            Jadwal Operasional
+                            <div class="sb-sidenav-collapse-arrow ms-auto"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseJadwal" aria-labelledby="headingThree" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ Auth::user()->role === 'superadmin' ? route('superadmin.jadwal') : route('admin.jadwal') }}">Lihat Jadwal operasional</a>
+                            </nav>
+                        </div>
+                    </div>
+                @endif
+    
+                @if (Auth::check() && Auth::user()->role === 'superadmin')
+                    <div class="nav-item">
+                        <a class="nav-link d-flex align-items-center" href="#" data-bs-toggle="collapse" data-bs-target="#collapseUser" aria-expanded="false" aria-controls="collapseUser">
+                            <div class="sb-nav-link-icon"><i class="fas fa-users"></i></div>
+                            User Pengguna
+                            <div class="sb-sidenav-collapse-arrow ms-auto"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseUser" aria-labelledby="headingFour" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="{{ route('superadmin.userIndex') }}">Lihat User</a>
+                            </nav>
+                        </div>
+                    </div>
+                @endif
+            </div>
         </div>
         
-
-        <div id="layoutSidenav_content">
-            <main> 
-                <div class="container-fluid px-4">
-                    <h1 class="mt-3 mb-4">Dashboard Ambulans MWC NU Salam</h1>
-
-                    <center><iframe width="70%" height="480"
-                            src="https://www.youtube.com/embed/bfAioPWfj1c?si=dGXWPeRAbQ_ehMiV&autoplay=1&mute=1"
-                            title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                    </center>
-
-                    <aside class="text-center bg-gradient-primary-to-secondary">
-                        <div class="row gx-5 justify-content-center">
-                            <div class="col-xl-8">
-                                <marquee width="100%" scrolldelay="110"><h4 class="text-white mt-3 mb-4">"Ambulans MWC NU Salam, Siap melayani Anda!" &emsp; 
-                                    🚨Layanan Ambulance 24 Jam Gratis🚨&emsp;
-                                    🚑Antar Jemput Pasien&emsp;
-                                    🚑Antar Jemput Jenazah&emsp;
-                                    ⛑️ Tanggap Darurat Kebencanaan&emsp;&emsp;&emsp; 
-                                    📞Call center WA/Telepon
-                                    (0878 8844 1926 / 0821 3521 3026)</h4></marquee>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <div class="row justify-content-center mt-4">
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-primary text-white mb-4">
-                                <div class="card-body">Sejarah Ambulans</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="#">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-warning text-white mb-4">
-                                <div class="card-body">Grafik Penggunaan</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href="/grafik">View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card bg-success text-white mb-4">
-                                <div class="card-body">Jadwal Ambulans</div>
-                                <div class="card-footer d-flex align-items-center justify-content-between">
-                                    <a class="small text-white stretched-link" href={{ route ('admin.jadwal') }}>View Details</a>
-                                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
-
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; 2024 Ambulans MWC NU Salam</div>
-                    </div>
-                </div>
-            </footer>
+        <!-- Main Content Area -->
+        <div class="container-fluid main-content" id="mainContent">
+            <div class="p-4">
+                @yield('content')
+            </div>
         </div>
     </div>
+    
+    <!-- Footer -->
+    <div id="layoutAuthentication_footer">
+        <footer style="background-color: #004d18 !important;" class="py-4 bg-dark mt-auto text-white">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div>Copyright &copy; Sistem Informasi Pangkalan Data Penggunaan Ambulans MWC NU Salam</div>
+                    <div>
+                        <a href="#" class="text-white">Privacy Policy</a>
+                        &middot;
+                        <a href="#" class="text-white">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
 
-    <script src="{{ asset('Ambulans/js/scripts.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-wnsNNtHhTmAZKNzz2tE8jtP/zE51C/OC/xPB93M0DflEK4dH4aW+u+d/hm/eeBgq" crossorigin="anonymous">
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#sidebarToggle').click(function() {
+                $('#sidenavAccordion').toggleClass('show'); // Toggles sidebar visibility
+                $('#mainContent').toggleClass('shifted');   // Shifts content area when sidebar is visible
+                $(this).toggleClass('active');              // Toggles hamburger icon state
+            });
+        });
     </script>
+    
 </body>
-
 </html>

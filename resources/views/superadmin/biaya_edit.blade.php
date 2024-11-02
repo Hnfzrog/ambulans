@@ -7,7 +7,7 @@
     }
 </style>
 
-<h1 class="text-center mt-4 mb-4">Tambah Biaya Operasional</h1>
+<h1 class="text-center mt-4 mb-4">Edit Biaya Operasional</h1>
 
 <div class="container">
     @if(session('success'))
@@ -26,20 +26,22 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.biaya.store') }}" method="POST">
+    <form action="{{ route('superadmin.biaya.update', $operasional->id) }}" method="POST">
         @csrf
+        @method('PUT')
+
         <div class="mb-3">
             <label for="tanggal" class="form-label">Tanggal</label>
-            <input type="date" name="tanggal" class="form-control" id="tanggal" required>
+            <input type="date" name="tanggal" class="form-control" id="tanggal" value="{{ $operasional->tanggal }}" required>
         </div>
-        
+
         <div class="row g-3">
             <div class="col-md mb-3">
                 <label for="id_kru" class="form-label">ID Kru</label>
                 <select id="id_kru" name="id_kru" class="form-select" required>
                     <option value="" disabled selected>Pilih Driver</option>
                     @foreach ($drivers as $driver)
-                        <option value="{{ $driver->id }}">{{ $driver->name }}</option>
+                        <option value="{{ $driver->id }}" {{ $driver->id == $operasional->id_kru ? 'selected' : '' }}>{{ $driver->name }}</option>
                     @endforeach
                 </select>
                 @error('id_kru')
@@ -51,7 +53,7 @@
                 <select id="id_koordinator" name="id_koordinator" class="form-select" required>
                     <option value="" disabled selected>Pilih Koordinator</option>
                     @foreach ($coordinators as $coordinator)
-                        <option value="{{ $coordinator->id }}">{{ $coordinator->name }}</option>
+                        <option value="{{ $coordinator->id }}" {{ $coordinator->id == $operasional->id_koordinator ? 'selected' : '' }}>{{ $coordinator->name }}</option>
                     @endforeach
                 </select>
                 @error('id_koordinator')
@@ -62,31 +64,37 @@
 
         <div class="mb-3">
             <label for="keterangan" class="form-label">Keterangan</label>
-            <input type="text" name="keterangan" class="form-control" id="keterangan" placeholder="Keterangan" required>
+            <input type="text" name="keterangan" class="form-control" id="keterangan" value="{{ old('keterangan', $operasional->keterangan) }}" placeholder="Keterangan" required>
             @error('keterangan')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-        
+
         <div class="mb-3">
             <label for="uang_masuk" class="form-label">Uang Masuk</label>
-            <input type="number" name="uang_masuk" class="form-control" id="uang_masuk" placeholder="Rp." required>
+            <div class="input-group">
+                <span class="input-group-text">Rp.</span>
+                <input type="number" name="uang_masuk" class="form-control" id="uang_masuk" value="{{ old('uang_masuk', $operasional->uang_masuk) }}" placeholder="0" required>
+            </div>
             @error('uang_masuk')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
-        
+
         <div class="mb-3">
             <label for="uang_keluar" class="form-label">Uang Keluar</label>
-            <input type="number" name="uang_keluar" class="form-control" id="uang_keluar" placeholder="Rp." required>
+            <div class="input-group">
+                <span class="input-group-text">Rp.</span>
+                <input type="number" name="uang_keluar" class="form-control" id="uang_keluar" value="{{ old('uang_keluar', $operasional->uang_keluar) }}" placeholder="0" required>
+            </div>
             @error('uang_keluar')
                 <div class="text-danger">{{ $message }}</div>
             @enderror
         </div>
 
-        <div class="d-flex justify-content-between mb-4">
+        <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Simpan</button>
-            <a href="{{ route('admin.biaya') }}" class="btn btn-secondary">Kembali</a>
+            <a href="{{ route('superadmin.biaya') }}" class="btn btn-secondary">Kembali</a>
         </div>
     </form>
 </div>

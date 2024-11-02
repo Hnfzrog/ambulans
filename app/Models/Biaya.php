@@ -15,5 +15,17 @@ class Biaya extends Model
         'keterangan',
         'uang_masuk',
         'uang_keluar',
+        'id_kru',
+        'id_koordinator',
     ];
+
+    public function kru()
+    {
+        return $this->belongsTo(User::class, 'id_kru');
+    }
+
+    public function koordinator()
+    {
+        return $this->belongsTo(User::class, 'id_koordinator');
+    }
 }
