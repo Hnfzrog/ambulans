@@ -99,7 +99,7 @@ class SuperAdminController extends Controller
         }
 
         $request->validate([
-            'role' => 'required|in:admin,superAdmin',
+            'role' => 'required|in:admin,superadmin',
         ]);
 
         $user->role = $request->role;

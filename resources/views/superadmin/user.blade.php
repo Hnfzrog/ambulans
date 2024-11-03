@@ -63,10 +63,10 @@
                                 <div class="d-inline-flex">
                                     @if($user->role === 'admin')
                                         <button type="button" class="btn btn-outline-primary btn-sm me-1" title="Promote to Super Admin" 
-                                            onclick="confirmRoleChange('{{ route('superadmin.updateRole', $user) }}', 'superAdmin')">
+                                            onclick="confirmRoleChange('{{ route('superadmin.updateRole', $user) }}', 'superadmin')">
                                             <i class="bi bi-arrow-up-circle"></i>
                                         </button>
-                                    @elseif($user->role === 'superAdmin')
+                                    @elseif($user->role === 'superadmin')
                                         <button type="button" class="btn btn-outline-danger btn-sm me-1" title="Demote to Admin" 
                                             onclick="confirmRoleChange('{{ route('superadmin.updateRole', $user) }}', 'admin')">
                                             <i class="bi bi-arrow-down-circle"></i>

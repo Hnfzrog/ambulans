@@ -24,7 +24,8 @@ class RoleMiddleware
 
         // Check if the user has the correct role
         if (Auth::user()->role !== $role) {
-            return redirect('/home')->with('error', 'Unauthorized access.');
+            return redirect('/')->with('error', 'Unauthorized access.');
+            dd('array');
         }
 
         return $next($request);
