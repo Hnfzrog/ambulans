@@ -13,7 +13,7 @@ class BiayaSeeder extends Seeder
     
     {
         $kru = User::where('role', 'admin')->inRandomOrder()->first();
-        $koordinator = User::where('role', 'superAdmin')->inRandomOrder()->first();
+        $koordinator = User::where('role', 'superadmin')->inRandomOrder()->first();
         Biaya::create([
             'tanggal' => '2024-10-01',
             'keterangan' => 'Pembelian bahan baku',

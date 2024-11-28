@@ -54,9 +54,9 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="card-footer text-center py-3">
+                                {{-- <div class="card-footer text-center py-3">
                                     <div class="small"><a href="{{ route('register') }}">{{ __('Tidak Punya Akun? Daftar Sekarang!') }}</a></div>
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                     </div>

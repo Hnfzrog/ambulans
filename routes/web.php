@@ -19,6 +19,9 @@ Auth::routes();
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
+Route::get('/grafik', [PasienController::class, 'showGrafik'])->name('grafik');
+Route::get('/jadwal', [JadwalController::class, 'indexDash'])->name('jadwal');
+
 // Admin Routes
 Route::group(['middleware' => ['auth','can:admin']], function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -74,5 +77,5 @@ Route::group(['middleware' => ['auth','can:superadmin']], function () {
     Route::get('/superadmin/user/create', [SuperAdminController::class, 'createUser'])->name('superadmin.user.create');
     Route::get('/superadmin/user', [SuperAdminController::class, 'userIndex'])->name('superadmin.userIndex');
     Route::put('/superadmin/user/{user}/role', [SuperAdminController::class, 'updateUserRole'])->name('superadmin.updateRole');
-
+    Route::post('/superadmin/user/store', [SuperAdminController::class, 'storeUser'])->name('superadmin.user.store');
 });

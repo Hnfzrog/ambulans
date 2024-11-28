@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Pasien;
 use App\Models\Biaya;
 use App\Models\User;
@@ -28,7 +30,7 @@ class SuperAdminController extends Controller
     public function pasienCreate()
     {
         $drivers = User::where('role', 'admin')->get();
-        $coordinators = User::where('role', 'superAdmin')->get();
+        $coordinators = User::where('role', 'superadmin')->get();
         return view('superadmin.pasien_create', compact('drivers', 'coordinators'));
     }
 
@@ -49,7 +51,7 @@ class SuperAdminController extends Controller
     public function biayaCreate()
     {
         $drivers = User::where('role', 'admin')->get();
-        $coordinators = User::where('role', 'superAdmin')->get();
+        $coordinators = User::where('role', 'superadmin')->get();
 
         return view('superadmin.biaya_create', compact('drivers', 'coordinators'));
     }
@@ -78,9 +80,27 @@ class SuperAdminController extends Controller
 
     public function createUser()
     {
-        return view('superadmin.user.create');
+        return view('superadmin.user_create');
     }
 
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+    
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'admin',
+        ]);
+    
+        return redirect()->route('superadmin.userIndex')->with('success', 'User baru berhasil ditambahkan.');
+    }    
+    
     public function userIndex(Request $request)
     {
         $search = $request->get('search');

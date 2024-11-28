@@ -17,6 +17,14 @@ class JadwalController extends Controller
         return view('jadwal', compact('jadwal'));
     }
 
+    public function indexDash()
+    {
+        $jadwal24 = Jadwal::whereBetween('tanggal', [now()->startOfDay(), now()->endOfDay()])->get();
+        $jadwal3Days = Jadwal::whereBetween('tanggal', [now()->addDay()->startOfDay(), now()->addDays(3)->endOfDay()])->get();
+    
+        return view('jadwal', compact('jadwal24', 'jadwal3Days'));
+    }
+
     public function indexSuper(Request $request)
     {
         // Get the search input

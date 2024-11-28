@@ -16,7 +16,7 @@ class PasienSeeder extends Seeder
     {
         // Retrieve random users with appropriate roles for kru and koordinator
         $kru = User::where('role', 'admin')->inRandomOrder()->first();
-        $koordinator = User::where('role', 'superAdmin')->inRandomOrder()->first();
+        $koordinator = User::where('role', 'superadmin')->inRandomOrder()->first();
 
         // Create sample pasien data with random kru and koordinator ids
         Pasien::create([

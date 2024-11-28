@@ -213,6 +213,29 @@ class PasienController extends Controller
         return view('superadmin.pasien.cetak', compact('patients'));
     }
 
+    public function showGrafik()
+    {
+        $dailyData = Pasien::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->groupBy('date')
+            ->get();
+    
+        $monthlyData = Pasien::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+            ->groupBy('year', 'month')
+            ->get()
+            ->map(function ($d) {
+                return [
+                    'label' => $d->year . '-' . str_pad($d->month, 2, '0', STR_PAD_LEFT),
+                    'total' => $d->total,
+                ];
+            });
+    
+        $yearlyData = Pasien::selectRaw('YEAR(created_at) as year, COUNT(*) as total')
+            ->groupBy('year')
+            ->get();
+    
+        return view('grafik', compact('dailyData', 'monthlyData', 'yearlyData'));
+    }
+    
     public function export()
     {
         return Excel::download(new PatientsExport, 'pasien.xlsx');

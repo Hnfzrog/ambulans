@@ -28,6 +28,9 @@
 <div class="container my-5">
     <h1 class="text-center mt-4 mb-4">User Management</h1>
 
+    <div class="mb-4">
+        <a href="{{ route('superadmin.user.create') }}" class="btn btn-primary">+ Tambah User</a>
+    </div>
     <form method="GET" action="{{ route('superadmin.userIndex') }}" class="mb-4">
         <div class="input-group">
             <input type="text" name="search" value="{{ request()->get('search') }}" class="form-control" placeholder="Search by user name" aria-label="Search by user name">

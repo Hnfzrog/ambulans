@@ -29,7 +29,7 @@ class AdminController extends Controller
     public function pasienCreate()
     {
         $drivers = User::where('role', 'admin')->get();
-        $coordinators = User::where('role', 'superAdmin')->get(); // Adjust the query if needed
+        $coordinators = User::where('role', 'superadmin')->get(); // Adjust the query if needed
 
         return view('admin.pasien_create', compact('drivers', 'coordinators'));
     }
@@ -57,7 +57,7 @@ class AdminController extends Controller
     public function biayaCreate()
     {
         $drivers = User::where('role', 'admin')->get();
-        $coordinators = User::where('role', 'superAdmin')->get(); // Adjust the query if needed
+        $coordinators = User::where('role', 'superadmin')->get(); // Adjust the query if needed
 
         return view('admin.biaya_create', compact('drivers', 'coordinators'));
     }
