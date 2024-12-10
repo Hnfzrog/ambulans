@@ -209,6 +209,7 @@ class PasienController extends Controller
 
     public function cetak()
     {
+        //
         $patients = Pasien::all();
         return view('superadmin.pasien.cetak', compact('patients'));
     }
