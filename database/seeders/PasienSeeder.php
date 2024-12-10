@@ -1,44 +1,79 @@
 <?php
-
 namespace Database\Seeders;
 
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Pasien;
-use App\Models\User;
-use Carbon\Carbon; 
+use Illuminate\Support\Facades\DB;
+use League\Csv\Reader;
+use Carbon\Carbon; // Import Carbon
 
 class PasienSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
-    public function run()
+    public function run(): void
     {
-        // Retrieve random users with appropriate roles for kru and koordinator
-        $kru = User::where('role', 'admin')->inRandomOrder()->first();
-        $koordinator = User::where('role', 'superadmin')->inRandomOrder()->first();
+        // Set the locale to Indonesian for Carbon
+        Carbon::setLocale('id');
 
-        // Create sample pasien data with random kru and koordinator ids
-        Pasien::create([
-            'nama' => 'John Doe',
-            'alamat' => '123 Main St',
-            'tujuan' => 'Check-up',
-            'keterangan' => 'Regular check-up',
-            'photo' => null,
-            'id_kru' => $kru ? $kru->id : null,
-            'id_koordinator' => $koordinator ? $koordinator->id : null,
-            'tanggal' => Carbon::now()->format('Y-m-d'),
-        ]);
+        // Path to the CSV file
+        $csvFilePath = public_path('assets-csv/pasiens.csv');
 
-        Pasien::create([
-            'nama' => 'Jane Smith',
-            'alamat' => '456 Elm St',
-            'tujuan' => 'Vaccination',
-            'keterangan' => 'Annual flu shot',
-            'photo' => null,
-            'id_kru' => $kru ? $kru->id : null,
-            'id_koordinator' => $koordinator ? $koordinator->id : null,
-            'tanggal' => Carbon::now()->format('Y-m-d'),
-        ]);
+        $csv = Reader::createFromPath($csvFilePath, 'r');
+        $csv->setHeaderOffset(0); 
+
+        // Mapping of Indonesian days and months to English
+        $days = [
+            'Senin' => 'Monday',
+            'Selasa' => 'Tuesday',
+            'Rabu' => 'Wednesday',
+            'Kamis' => 'Thursday',
+            'Jumat' => 'Friday',
+            'Sabtu' => 'Saturday',
+            'Ahad' => 'Sunday',
+        ];
+
+        $months = [
+            'Januari' => 'January',
+            'Februari' => 'February',
+            'Maret' => 'March',
+            'April' => 'April',
+            'Mei' => 'May',
+            'Juni' => 'June',
+            'Juli' => 'July',
+            'Agustus' => 'August',
+            'September' => 'September',
+            'Oktober' => 'October',
+            'November' => 'November',
+            'Desember' => 'December',
+        ];
+
+        foreach ($csv as $row) {
+            // Debugging: Print the date string
+            echo 'Parsing date: ' . $row['Tanggal'] . PHP_EOL;
+
+            // Replace Indonesian day and month names with English equivalents
+            $dateString = strtr($row['Tanggal'], array_merge($days, $months));
+
+            try {
+                // Parse and format the date using Carbon
+                $tanggal = Carbon::createFromFormat('l, j F Y', $dateString)->format('Y-m-d');
+            } catch (\Exception $e) {
+                echo 'Error parsing date: ' . $e->getMessage() . PHP_EOL;
+                continue;
+            }
+
+            DB::table('pasiens')->insert([
+                'nama' => $row['nama'],
+                'alamat' => $row['alamat'],
+                'tujuan' => $row['tujuan'],
+                'keterangan' => $row['keterangan'],
+                'photo' => $row['photo'],
+                'id_kru' => $row['id_kru'],
+                'id_koordinator' => $row['id_koordinator'],
+                'tanggal' => $tanggal, // Use the formatted date
+            ]);
+        }
     }
 }
