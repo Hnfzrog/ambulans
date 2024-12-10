@@ -69,7 +69,7 @@
                 @foreach($patients as $index => $patient)
                     <tr>
                         <td>{{ ($patients->currentPage() - 1) * $patients->perPage() + $index + 1 }}</td>
-                        <td>{{ \Carbon\Carbon::parse($patient->created_at)->locale('id')->translatedFormat('j F Y') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($patient->tanggal)->locale('id')->translatedFormat('j F Y') }}</td>
                         <td>{{ optional($patient->kru)->name ?? 'N/A' }}</td>
                         <td>{{ optional($patient->koordinator)->name ?? 'N/A' }}</td>
                         <td>{{ $patient->nama }}</td>

@@ -47,20 +47,17 @@
 </div>
 
 <script>
-    // Function to format date for daily data (e.g., "1 Januari 2024")
     const formatDateDaily = (dateString) => {
         const date = new Date(dateString);
         return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
     };
 
-    // Function to format date for monthly data (e.g., "Januari 2024")
-    const formatDateMonthly = (dateString) => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric' }).format(date);
+    const formatDateMonthly = (monthString) => {
+        return monthString; // Already formatted in the backend as 'May 2024'
     };
 
     // Daily data for line chart
-    const dailyLabels = @json($dailyData->pluck('date')).map(formatDateDaily);
+    const dailyLabels = @json($dailyData->pluck('tanggal')).map(formatDateDaily);
     const dailyTotals = @json($dailyData->pluck('total'));
 
     const dailyCtx = document.getElementById('dailyChart').getContext('2d');
@@ -124,4 +121,5 @@
         }
     });
 </script>
+
 @endsection

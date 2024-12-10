@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use App\Exports\PatientsExport;
 use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class PasienController extends Controller
 {
@@ -216,21 +217,28 @@ class PasienController extends Controller
 
     public function showGrafik()
     {
-        $dailyData = Pasien::selectRaw('DATE(created_at) as date, COUNT(*) as total')
-            ->groupBy('date')
+        // Get daily data grouped by dates (full date included)
+        $dailyData = Pasien::selectRaw('tanggal, DAY(tanggal) as day, COUNT(*) as total')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal')
             ->get();
     
-        $monthlyData = Pasien::selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total')
+        // Get monthly data for the past 12 months (including current month)
+        $monthlyData = Pasien::selectRaw('YEAR(tanggal) as year, MONTH(tanggal) as month, COUNT(*) as total')
+            ->where('tanggal', '>=', Carbon::now()->subYear()) // Data for the past year
             ->groupBy('year', 'month')
             ->get()
             ->map(function ($d) {
+                // Format the month into a human-readable string like 'May 2024'
+                $monthName = \Carbon\Carbon::createFromDate($d->year, $d->month, 1)->format('F Y');
                 return [
-                    'label' => $d->year . '-' . str_pad($d->month, 2, '0', STR_PAD_LEFT),
+                    'label' => $monthName,
                     'total' => $d->total,
                 ];
             });
     
-        $yearlyData = Pasien::selectRaw('YEAR(created_at) as year, COUNT(*) as total')
+        // Get yearly data for pie chart (data for each year)
+        $yearlyData = Pasien::selectRaw('YEAR(tanggal) as year, COUNT(*) as total')
             ->groupBy('year')
             ->get();
     

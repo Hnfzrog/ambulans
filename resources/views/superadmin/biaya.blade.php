@@ -44,12 +44,26 @@
             <div class="col-md-4 mb-3">
                 <input type="date" id="datePicker" name="start_date" class="form-control" value="{{ request()->get('start_date') }}">
             </div>
+
+            
+
             <div class="col-md-2 mb-3">
                 <button type="submit" class="btn btn-primary w-100">cari</button>
             </div>
         </div>
     </form>
 
+    <div class="col-md-12">
+        <!-- Display Total Data -->
+        <div class="alert alert-info" role="alert">
+            <strong>Total Keseluruhan:</strong><br>
+            Uang Masuk: Rp {{ isset($totalUangMasukAll) ? number_format($totalUangMasukAll, 0, ',', '.') : '0' }}<br>
+            Uang Keluar: Rp {{ isset($totalUangKeluarAll) ? number_format($totalUangKeluarAll, 0, ',', '.') : '0' }}<br>
+            Saldo: Rp {{ isset($totalSaldoAll) ? number_format($totalSaldoAll, 0, ',', '.') : '0' }}
+        </div>                
+
+    </div>
+    
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
@@ -78,7 +92,7 @@
                         $saldo = $totalUangMasuk - $totalUangKeluar;
 
                         // Format date to "Hari Bulan Tanggal"
-                        $formattedDate = \Carbon\Carbon::parse($operasional->tanggal)->translatedFormat('j F Y');
+                        $formattedDate = \Carbon\Carbon::parse($operasional->tanggal)->locale('id')->translatedFormat('j F Y');
                     @endphp
                     <tr>
                         <td>{{ $index + 1 }}</td>
@@ -121,13 +135,13 @@
                     </tr>
                 @endforeach
 
-                <tr class="table-primary">
+                {{-- <tr class="table-primary">
                     <td colspan="5"><strong>Total</strong></td>
                     <td><strong>{{ number_format($totalUangMasuk, 0, ',', '.') }}</strong></td>
                     <td><strong>{{ number_format($totalUangKeluar, 0, ',', '.') }}</strong></td>
                     <td><strong>{{ number_format($totalUangMasuk - $totalUangKeluar, 0, ',', '.') }}</strong></td>
                     <td></td>
-                </tr>
+                </tr> --}}
             </tbody>
         </table>
     </div>
