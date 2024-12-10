@@ -2,33 +2,66 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder; // Pastikan ini ditambahkan
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
-class UserSeeder extends Seeder // Pastikan ada class di sini
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run() // Fungsi ini harus berada di dalam class
+    public function run()
     {
-        // Admin
-        User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
-        ]);
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Super Admin
-        User::create([
-            'name' => 'Super Admin User',
-            'email' => 'superadmin@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'superadmin',
-        ]);
+        \App\Models\User::truncate();
+        
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Seed the data
+        $users = [
+            [
+                'name' => 'Muhrodin',
+                'email' => 'muhroodinkru@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Nursalim',
+                'email' => 'nursalimkru@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Muhson',
+                'email' => 'muhsonkoordinator@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'superadmin',
+            ],
+            [
+                'name' => 'Ahmad Khotim',
+                'email' => 'ahmadkhotimkru@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Dwika Aulia Arief Prihastyo',
+                'email' => 'dwikaauliaapkru@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Andri Kurniawan',
+                'email' => 'andrikurniawankru@gmail.com',
+                'password' => Hash::make('@Bismillah123'),
+                'role' => 'admin',
+            ],
+        ];
+
+        foreach ($users as $user) {
+            User::create($user);
+        }
     }
 }
