@@ -19,7 +19,7 @@ Auth::routes();
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/grafik/{month}/{year}', [PasienController::class, 'showGrafik']);
+Route::get('/grafik/', [PasienController::class, 'showGrafik']);
 Route::get('/jadwal', [JadwalController::class, 'indexDash'])->name('jadwal');
 
 // Admin Routes
