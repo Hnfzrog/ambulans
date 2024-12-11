@@ -39,13 +39,29 @@ class SuperAdminController extends Controller
         $search = $request->get('search');
         $tanggal = $request->get('tanggal'); // Get the date input if available
 
+        // Filter data based on search and date
         $biayaOperasional = Biaya::when($search, function ($query) use ($search) {
             $query->where('keterangan', 'like', "%{$search}%"); // Search by description
         })->when($tanggal, function ($query) use ($tanggal) {
             $query->whereDate('tanggal', $tanggal); // Search by date
         })->paginate(10);
-    
-        return view('superadmin.biaya', compact('biayaOperasional'));
+
+        // Calculate totals for the filtered dataset
+        $totalUangMasuk = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+        })->sum('uang_masuk');
+
+        $totalUangKeluar = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+        })->sum('uang_keluar');
+
+        $totalSaldo = $totalUangMasuk - $totalUangKeluar;
+
+        return view('superadmin.biaya', compact('biayaOperasional', 'totalUangMasuk', 'totalUangKeluar', 'totalSaldo'));
     }
 
     public function biayaCreate()

@@ -51,8 +51,18 @@ class AdminController extends Controller
         // Pagination with 10 items per page
         $biayaOperasional = $query->paginate(10);
     
-        return view('admin.biaya', compact('biayaOperasional'));
-    }
+        // Calculate totals for the filtered data
+        $totalUangMasukAll = $query->sum('uang_masuk');
+        $totalUangKeluarAll = $query->sum('uang_keluar');
+        $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
+    
+        return view('admin.biaya', compact(
+            'biayaOperasional', 
+            'totalUangMasukAll', 
+            'totalUangKeluarAll', 
+            'totalSaldoAll'
+        ));
+    }    
     
     public function biayaCreate()
     {
