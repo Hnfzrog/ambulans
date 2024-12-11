@@ -37,32 +37,33 @@ class AdminController extends Controller
 
     public function biayaIndex(Request $request)
     {
-        $query = Biaya::query();
-    
-        // Apply filters if present
-        if ($request->filled('tanggal')) {
-            $query->whereDate('tanggal', $request->tanggal);
-        }
-    
-        if ($request->filled('keterangan')) {
-            $query->where('keterangan', 'like', '%' . $request->keterangan . '%');
-        }
-    
-        // Pagination with 10 items per page
-        $biayaOperasional = $query->paginate(10);
-    
-        // Calculate totals for the filtered data
-        $totalUangMasukAll = $query->sum('uang_masuk');
-        $totalUangKeluarAll = $query->sum('uang_keluar');
-        $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
-    
-        return view('admin.biaya', compact(
-            'biayaOperasional', 
-            'totalUangMasukAll', 
-            'totalUangKeluarAll', 
-            'totalSaldoAll'
-        ));
-    }    
+        $search = $request->get('search');
+        $tanggal = $request->get('tanggal'); // Get the date input if available
+
+        // Filter data based on search and date
+        $biayaOperasional = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Search by description
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Search by date
+        })->paginate(10);
+
+        // Calculate totals for the filtered dataset
+        $totalUangMasuk = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+        })->sum('uang_masuk');
+
+        $totalUangKeluar = Biaya::when($search, function ($query) use ($search) {
+            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+        })->when($tanggal, function ($query) use ($tanggal) {
+            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+        })->sum('uang_keluar');
+
+        $totalSaldo = $totalUangMasuk - $totalUangKeluar;
+
+        return view('admin.biaya', compact('biayaOperasional', 'totalUangMasuk', 'totalUangKeluar', 'totalSaldo'));
+    }
     
     public function biayaCreate()
     {

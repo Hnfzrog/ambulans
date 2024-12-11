@@ -59,9 +59,9 @@
         <!-- Display Total Data -->
         <div class="alert alert-info" role="alert">
             <strong>Total Keseluruhan:</strong><br>
-            Uang Masuk: Rp {{ isset($totalUangMasukAll) ? number_format($totalUangMasukAll, 0, ',', '.') : '0' }}<br>
-            Uang Keluar: Rp {{ isset($totalUangKeluarAll) ? number_format($totalUangKeluarAll, 0, ',', '.') : '0' }}<br>
-            Saldo: Rp {{ isset($totalSaldoAll) ? number_format($totalSaldoAll, 0, ',', '.') : '0' }}
+            Uang Masuk: Rp {{ isset($totalUangMasuk) ? number_format($totalUangMasuk, 0, ',', '.') : '0' }}<br>
+            Uang Keluar: Rp {{ isset($totalUangKeluar) ? number_format($totalUangKeluar, 0, ',', '.') : '0' }}<br>
+            Saldo: Rp {{ isset($totalSaldo) ? number_format($totalSaldo, 0, ',', '.') : '0' }}
         </div>                
 
     </div>
