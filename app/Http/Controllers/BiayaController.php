@@ -10,73 +10,75 @@ use App\Exports\BiayaExport;
 
 class BiayaController extends Controller
 {
-    public function index()
-        {
-            
-            $query = Biaya::query();
-        
-            // Search by 'keterangan' if the user submits the search input
-            if ($request->filled('search')) {
-                $query->where('keterangan', 'like', '%' . $request->search . '%');
-            }
-        
-            // Filter by date range if the user selects a start date
-            if ($request->filled('start_date')) {
-                $query->where('tanggal', '>=', $request->start_date);
-            }
-        
-            // Paginate the result
-            $biayaOperasional = $query->paginate(10);
-        
-            // Calculate totals only for the filtered (searched) data
-            $totalUangMasukAll = $query->sum('uang_masuk');
-            $totalUangKeluarAll = $query->sum('uang_keluar');
-            $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
+    public function index(Request $request)
+    {
+        // Initialize the query
+        $query = Biaya::query();
 
-            dd($totalSaldoAll);
-            // Return the view with the data
-            return view('admin.biaya', compact(
-                'biayaOperasional',
-                'totalUangMasukAll',
-                'totalUangKeluarAll',
-                'totalSaldoAll'
-            ));
+        dd($request);
+    
+        // Apply search filter if the "search" parameter is provided
+        if ($request->filled('search')) {
+            $query->where('keterangan', 'like', '%' . $request->search . '%');
         }
+    
+        // Apply date filter if the "start_date" parameter is provided
+        if ($request->filled('start_date')) {
+            $query->where('tanggal', '>=', $request->start_date);
+        }
+    
+        // Paginate the filtered results
+        $biayaOperasional = $query->paginate(10);
+    
+        // Calculate total amounts
+        $totalUangMasukAll = $query->sum('uang_masuk');
+        $totalUangKeluarAll = $query->sum('uang_keluar');
+        $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
+    
+        // Return the view with the filtered data and totals
+        return view('admin.biaya', compact(
+            'biayaOperasional',
+            'totalUangMasukAll',
+            'totalUangKeluarAll',
+            'totalSaldoAll'
+        ));
+    }
 
-
-        public function indexSuper(Request $request)
-        {
-            // Start the base query
-            $query = Biaya::query();
-
-            $totalsQuery = clone $query;
-
-            $totalUangMasukAll = $totalsQuery->sum('uang_masuk');
-            $totalUangKeluarAll = $totalsQuery->sum('uang_keluar');
-            $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
-            
-            // Search by 'keterangan' if the user submits the search input
-            if ($request->filled('search')) {
-                $query->where('keterangan', 'like', '%' . $request->search . '%');
-            }
-            
-            // Filter by date range if the user selects a start date
-            if ($request->filled('start_date')) {
-                $query->where('tanggal', '>=', $request->start_date);
-            }                    
-
-            // Paginate the result
-            $biayaOperasional = $query->paginate(10);
+    public function indexSuper(Request $request)
+    {
+        // Start the base query
+        $query = Biaya::query();
+    
+        // Clone the query for totals calculation
+        $totalsQuery = clone $query;
+    
+        // Calculate total amounts
+        $totalUangMasukAll = $totalsQuery->sum('uang_masuk');
+        $totalUangKeluarAll = $totalsQuery->sum('uang_keluar');
+        $totalSaldoAll = $totalUangMasukAll - $totalUangKeluarAll;
         
-            // Return the filtered data along with totals to the view
-            return view('superadmin.biaya', compact(
-                'biayaOperasional',
-                'totalUangMasukAll',
-                'totalUangKeluarAll',
-                'totalSaldoAll'
-            ));
-        }             
+        // Search by 'keterangan' if the user submits the search input
+        if ($request->filled('search')) {
+            $query->where('keterangan', 'like', '%' . $request->search . '%');
+        }
         
+        // Filter by date range if the user selects a start date
+        if ($request->filled('start_date')) {
+            $query->where('tanggal', '>=', $request->start_date);
+        }
+    
+        // Paginate the result and append query parameters to pagination links
+        $biayaOperasional = $query->paginate(10)->appends($request->all());
+    
+        // Return the filtered data along with totals to the view
+        return view('superadmin.biaya', compact(
+            'biayaOperasional',
+            'totalUangMasukAll',
+            'totalUangKeluarAll',
+            'totalSaldoAll'
+        ));
+    }
+    
     public function store(Request $request)
     {
         $request->validate([

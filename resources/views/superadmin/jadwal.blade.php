@@ -8,8 +8,8 @@
     h1 {
         color: #343a40; /* Darker text for better readability */
     }
-    .container{
-        min-height:70vh /* Light background for contrast */
+    .container {
+        min-height: 70vh; /* Ensure minimum height */
     }
     .table {
         border-radius: 0.5rem; /* Rounded corners for the table */
@@ -30,7 +30,7 @@
     <h1 class="text-center mb-4">Jadwal Operasional</h1>
     
     <div class="d-flex justify-content-between mb-4">
-        <a href="{{ route('superadmin.jadwal.create') }}" class="btn btn-primary">+ Tambah Data jadwal</a>
+        <a href="{{ route('superadmin.jadwal.create') }}" class="btn btn-primary">+ Tambah Data Jadwal</a>
         <a href="{{ route('superadmin.jadwal.export') }}" class="btn btn-success">Cetak Jadwal Operasional</a>
     </div>
 
@@ -43,7 +43,7 @@
                 <input type="text" name="tujuan" value="{{ $tujuan }}" class="form-control" placeholder="Cari berdasarkan tujuan">
             </div>
             <div class="col-auto">
-                <button type="submit" class="btn btn-primary">cari</button>
+                <button type="submit" class="btn btn-primary">Cari</button>
             </div>
         </form>
     </div>

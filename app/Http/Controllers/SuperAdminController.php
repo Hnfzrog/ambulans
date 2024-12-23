@@ -24,9 +24,12 @@ class SuperAdminController extends Controller
             $query->where('nama', 'like', "%{$search}%");
         })->paginate(10);
     
-        return view('superadmin.pasien', compact('patients'));
+        // Retain the search parameter in the pagination links
+        $patients->appends(['search' => $search]);
+    
+        return view('superadmin.pasien', compact('patients', 'search'));
     }
-
+    
     public function pasienCreate()
     {
         $drivers = User::where('role', 'admin')->get();
@@ -36,33 +39,34 @@ class SuperAdminController extends Controller
 
     public function biayaIndex(Request $request)
     {
-        $search = $request->get('search');
-        $tanggal = $request->get('tanggal'); // Get the date input if available
-
+        $search = $request->get('search'); // Correct input name for search
+        $start_date = $request->get('start_date'); // Correct input name for start date
+    
         // Filter data based on search and date
         $biayaOperasional = Biaya::when($search, function ($query) use ($search) {
-            $query->where('keterangan', 'like', "%{$search}%"); // Search by description
-        })->when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal); // Search by date
-        })->paginate(10);
-
+            $query->where('keterangan', 'like', "%{$search}%");
+        })->when($start_date, function ($query) use ($start_date) {
+            $query->whereDate('tanggal', $start_date);
+        })->paginate(10)
+        ->appends($request->all()); // Append query parameters to pagination links
+    
         // Calculate totals for the filtered dataset
         $totalUangMasuk = Biaya::when($search, function ($query) use ($search) {
-            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
-        })->when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+            $query->where('keterangan', 'like', "%{$search}%");
+        })->when($start_date, function ($query) use ($start_date) {
+            $query->whereDate('tanggal', $start_date);
         })->sum('uang_masuk');
-
+    
         $totalUangKeluar = Biaya::when($search, function ($query) use ($search) {
-            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
-        })->when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+            $query->where('keterangan', 'like', "%{$search}%");
+        })->when($start_date, function ($query) use ($start_date) {
+            $query->whereDate('tanggal', $start_date);
         })->sum('uang_keluar');
-
+    
         $totalSaldo = $totalUangMasuk - $totalUangKeluar;
-
+    
         return view('superadmin.biaya', compact('biayaOperasional', 'totalUangMasuk', 'totalUangKeluar', 'totalSaldo'));
-    }
+    }    
 
     public function biayaCreate()
     {
@@ -78,12 +82,16 @@ class SuperAdminController extends Controller
         $tujuan = $request->get('tujuan');
     
         $jadwal = Jadwal::when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal);
-        })
-        ->when($tujuan, function ($query) use ($tujuan) {
-            $query->where('tujuan', 'like', "%{$tujuan}%");
-        })
-        ->paginate(10);
+                $query->whereDate('tanggal', $tanggal);
+            })
+            ->when($tujuan, function ($query) use ($tujuan) {
+                $query->where('tujuan', 'like', "%{$tujuan}%");
+            })
+            ->paginate(10)
+            ->appends([
+                'tanggal' => $tanggal,
+                'tujuan' => $tujuan,
+            ]);
     
         return view('superadmin.jadwal', compact('jadwal', 'tanggal', 'tujuan'));
     }    

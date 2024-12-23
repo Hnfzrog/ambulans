@@ -9,8 +9,8 @@
     h1 {
         color: #343a40; /* Darker text for better readability */
     }
-    .container{
-        min-height:70vh /* Light background for contrast */
+    .container {
+        min-height: 70vh; /* Ensure container occupies a minimum height */
     }
     .table {
         border-radius: 0.5rem; /* Rounded corners for the table */
@@ -36,7 +36,7 @@
     @endif
 
     <!-- Search and Filter Form -->
-    <form method="GET" action="{{ route('superadmin.biaya.index') }}" class="mb-4">
+    <form method="GET" action="{{ route('superadmin.biaya') }}" class="mb-4">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan keterangan" value="{{ request()->get('search') }}">
@@ -44,26 +44,22 @@
             <div class="col-md-4 mb-3">
                 <input type="date" id="datePicker" name="start_date" class="form-control" value="{{ request()->get('start_date') }}">
             </div>
-
-            
-
             <div class="col-md-2 mb-3">
-                <button type="submit" class="btn btn-primary w-100">cari</button>
+                <button type="submit" class="btn btn-primary w-100">Cari</button>
             </div>
         </div>
-    </form>
+    </form>    
 
     <div class="col-md-12">
         <!-- Display Total Data -->
         <div class="alert alert-info" role="alert">
             <strong>Total Keseluruhan:</strong><br>
-            Uang Masuk: Rp {{ isset($totalUangMasukAll) ? number_format($totalUangMasukAll, 0, ',', '.') : '0' }}<br>
-            Uang Keluar: Rp {{ isset($totalUangKeluarAll) ? number_format($totalUangKeluarAll, 0, ',', '.') : '0' }}<br>
-            Saldo: Rp {{ isset($totalSaldoAll) ? number_format($totalSaldoAll, 0, ',', '.') : '0' }}
-        </div>                
-
+            Uang Masuk: Rp {{ number_format($totalUangMasuk, 0, ',', '.') }}<br>
+            Uang Keluar: Rp {{ number_format($totalUangKeluar, 0, ',', '.') }}<br>
+            Saldo: Rp {{ number_format($totalSaldo, 0, ',', '.') }}
+        </div>
     </div>
-    
+
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
@@ -75,23 +71,12 @@
                     <th>Keterangan</th>
                     <th>Uang Masuk (Rp)</th>
                     <th>Uang Keluar (Rp)</th>
-                    <th>Saldo (Rp)</th>
                     <th>Opsi</th>
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $totalUangMasuk = 0;
-                    $totalUangKeluar = 0;
-                @endphp
-
                 @foreach($biayaOperasional as $index => $operasional)
                     @php
-                        $totalUangMasuk += $operasional->uang_masuk;
-                        $totalUangKeluar += $operasional->uang_keluar;
-                        $saldo = $totalUangMasuk - $totalUangKeluar;
-
-                        // Format date to "Hari Bulan Tanggal"
                         $formattedDate = \Carbon\Carbon::parse($operasional->tanggal)->locale('id')->translatedFormat('j F Y');
                     @endphp
                     <tr>
@@ -102,7 +87,6 @@
                         <td>{{ $operasional->keterangan }}</td>
                         <td>{{ number_format($operasional->uang_masuk, 0, ',', '.') }}</td>
                         <td>{{ number_format($operasional->uang_keluar, 0, ',', '.') }}</td>
-                        <td>{{ number_format($saldo, 0, ',', '.') }}</td>
                         <td>
                             <a href="{{ route('superadmin.biaya.edit', $operasional->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ $operasional->id }}">
@@ -134,14 +118,6 @@
                         </td>
                     </tr>
                 @endforeach
-
-                {{-- <tr class="table-primary">
-                    <td colspan="5"><strong>Total</strong></td>
-                    <td><strong>{{ number_format($totalUangMasuk, 0, ',', '.') }}</strong></td>
-                    <td><strong>{{ number_format($totalUangKeluar, 0, ',', '.') }}</strong></td>
-                    <td><strong>{{ number_format($totalUangMasuk - $totalUangKeluar, 0, ',', '.') }}</strong></td>
-                    <td></td>
-                </tr> --}}
             </tbody>
         </table>
     </div>
@@ -152,7 +128,7 @@
             Showing {{ $biayaOperasional->firstItem() }} to {{ $biayaOperasional->lastItem() }} of {{ $biayaOperasional->total() }} entries
         </div>
         <div>
-            {{ $biayaOperasional->links('vendor.pagination.custom') }} <!-- Use custom pagination view -->
+            {{ $biayaOperasional->links('vendor.pagination.custom') }}
         </div>
     </div>
 </div>
@@ -160,9 +136,8 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Clear button functionality
-        document.getElementById('clearDate').addEventListener('click', function () {
-            document.getElementById('datePicker').value = ''; // Clear the date input
+        document.getElementById('clearDate')?.addEventListener('click', function () {
+            document.getElementById('datePicker').value = '';
         });
     });
 </script>

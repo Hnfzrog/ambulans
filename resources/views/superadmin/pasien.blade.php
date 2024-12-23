@@ -8,8 +8,8 @@
     body {
         background-color: #f8f9fa; /* Light background for contrast */
     }
-    .container{
-        min-height:70vh /* Light background for contrast */
+    .container {
+        min-height: 70vh; /* Light background for contrast */
     }
     h1 {
         color: #343a40; /* Darker text for better readability */
@@ -43,7 +43,7 @@
     @endif
     
     <!-- Search Form -->
-    <form method="GET" action="{{ route('superadmin.pasien.index') }}" class="mb-4">
+    <form method="GET" action="{{ route('superadmin.pasien') }}" class="mb-4">
         <div class="input-group">
             <input type="text" name="search" class="form-control" placeholder="Cari berdasarkan nama pasien" value="{{ request()->get('search') }}">
             <button class="btn btn-outline-secondary" type="submit">Cari</button>
@@ -102,7 +102,7 @@
             Showing {{ $patients->firstItem() }} to {{ $patients->lastItem() }} of {{ $patients->total() }} entries
         </div>
         <div>
-            {{ $patients->links('vendor.pagination.custom') }}
+            {{ $patients->appends(request()->input())->links('vendor.pagination.custom') }}
         </div>
     </div>
 </div>

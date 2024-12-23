@@ -21,10 +21,9 @@ class AdminController extends Controller
         $patients = Pasien::when($search, function ($query) use ($search) {
             $query->where('nama', 'like', "%{$search}%");
         })->paginate(10); // Ensure you are using paginate here
-
+    
         return view('admin.pasien', compact('patients'));
-    }
-
+    }    
 
     public function pasienCreate()
     {
@@ -37,33 +36,34 @@ class AdminController extends Controller
 
     public function biayaIndex(Request $request)
     {
-        $search = $request->get('search');
+        $search = $request->get('keterangan'); // Ensure 'keterangan' matches form input name
         $tanggal = $request->get('tanggal'); // Get the date input if available
-
+    
         // Filter data based on search and date
         $biayaOperasional = Biaya::when($search, function ($query) use ($search) {
             $query->where('keterangan', 'like', "%{$search}%"); // Search by description
         })->when($tanggal, function ($query) use ($tanggal) {
             $query->whereDate('tanggal', $tanggal); // Search by date
-        })->paginate(10);
-
+        })->paginate(10)
+        ->appends($request->all()); // Append query parameters to pagination links
+    
         // Calculate totals for the filtered dataset
         $totalUangMasuk = Biaya::when($search, function ($query) use ($search) {
-            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+            $query->where('keterangan', 'like', "%{$search}%");
         })->when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+            $query->whereDate('tanggal', $tanggal);
         })->sum('uang_masuk');
-
+    
         $totalUangKeluar = Biaya::when($search, function ($query) use ($search) {
-            $query->where('keterangan', 'like', "%{$search}%"); // Filter for calculation
+            $query->where('keterangan', 'like', "%{$search}%");
         })->when($tanggal, function ($query) use ($tanggal) {
-            $query->whereDate('tanggal', $tanggal); // Filter for calculation
+            $query->whereDate('tanggal', $tanggal);
         })->sum('uang_keluar');
-
+    
         $totalSaldo = $totalUangMasuk - $totalUangKeluar;
-
+    
         return view('admin.biaya', compact('biayaOperasional', 'totalUangMasuk', 'totalUangKeluar', 'totalSaldo'));
-    }
+    }    
     
     public function biayaCreate()
     {
@@ -85,10 +85,10 @@ class AdminController extends Controller
             $query->where('tujuan', 'like', '%' . $request->input('tujuan') . '%');
         }
     
-        $jadwal = $query->paginate(10);
+        $jadwal = $query->paginate(10)->appends($request->except('page')); // Append query parameters
     
         return view('admin.jadwal', compact('jadwal'));
-    }
+    }    
     
     public function jadwalCreate()
     {

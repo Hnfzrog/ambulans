@@ -10,8 +10,8 @@
         color: #343a40; /* Darker text for better readability */
     }
 
-    .container{
-        min-height:70vh /* Light background for contrast */
+    .container {
+        min-height: 70vh; /* Light background for contrast */
     }
     .table {
         border-radius: 0.5rem; /* Rounded corners for the table */
@@ -35,10 +35,12 @@
 <h1 class="text-center mt-4 mb-4">Data Pasien</h1>
 
 <div class="container">
-    @if (Auth::check() && Auth::user()->role === 'superadmin')
-        <a href="{{ route('admin.pasien.cetak')}}" class="btn btn-success mb-4">Cetak Data Pasien</a>
-    @elseif(Auth::user()->role === 'admin')
-        <a href="{{ route('admin.pasien.create') }}" class="btn btn-primary mb-4">+ Tambah Data Pasien</a>
+    @if (Auth::check())
+        @if (Auth::user()->role === 'superadmin')
+            <a href="{{ route('admin.pasien.cetak') }}" class="btn btn-success mb-4">Cetak Data Pasien</a>
+        @elseif (Auth::user()->role === 'admin')
+            <a href="{{ route('admin.pasien.create') }}" class="btn btn-primary mb-4">+ Tambah Data Pasien</a>
+        @endif
     @endif
     
     <!-- Search form -->
@@ -101,7 +103,7 @@
             Showing {{ $patients->firstItem() }} to {{ $patients->lastItem() }} of {{ $patients->total() }} entries
         </div>
         <div>
-            {{ $patients->links('vendor.pagination.custom') }}
+            {{ $patients->appends(['search' => request('search')])->links('vendor.pagination.custom') }}
         </div>
     </div>
 </div>

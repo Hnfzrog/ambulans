@@ -63,7 +63,6 @@ Route::group(['middleware' => ['auth','can:superadmin']], function () {
     Route::put('/superadmin/biaya/{id}', [BiayaController::class, 'updateSuper'])->name('superadmin.biaya.update');
     Route::delete('/superadmin/biaya/{id}', [BiayaController::class, 'destroySuper'])->name('superadmin.biaya.destroy');
     Route::get('/superadmin/biaya/export', [BiayaController::class, 'exportExcel'])->name('superadmin.biaya.export');
-    Route::get('/superadmin/biaya/index', [BiayaController::class, 'indexSuper'])->name('superadmin.biaya.index');
 
     Route::get('/superadmin/jadwal', [SuperAdminController::class, 'jadwalIndex'])->name('superadmin.jadwal');
     Route::get('/superadmin/jadwal/create', [SuperAdminController::class, 'jadwalCreate'])->name('superadmin.jadwal.create');

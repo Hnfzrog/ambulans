@@ -9,8 +9,8 @@
     h1 {
         color: #343a40; /* Darker text for better readability */
     }
-    .container{
-        min-height:70vh /* Light background for contrast */
+    .container {
+        min-height: 70vh; /* Light background for contrast */
     }
     .table {
         border-radius: 0.5rem; /* Rounded corners for the table */
@@ -35,7 +35,6 @@
     <h1 class="text-center mb-4">Jadwal Operasional</h1>
 
     <div class="mb-4">
-
         <form method="GET" action="{{ route('admin.jadwal') }}" class="d-flex">
             <input type="text" name="tujuan" class="form-control" value="{{ request('tujuan') }}" placeholder="Filter by Tujuan">&nbsp;
             <input type="date" name="tanggal" class="form-control" value="{{ request('tanggal') }}" placeholder="Filter by Tanggal">&nbsp;
