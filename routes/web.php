@@ -22,6 +22,16 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/grafik/', [PasienController::class, 'showGrafik']);
 Route::get('/jadwal', [JadwalController::class, 'indexDash'])->name('jadwal');
 
+Route::get('photo/{filename}', function ($filename) {
+    $path = storage_path('app/public/photos/' . $filename);
+    
+    if (file_exists($path)) {
+        return response()->file($path);
+    } else {
+        return response('Foto tidak ditemukan', 404);
+    }
+})->name('photo.show');
+
 // Admin Routes
 Route::group(['middleware' => ['auth','can:admin']], function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');

@@ -79,20 +79,7 @@
                         <td>{{ $patient->tujuan }}</td>
                         <td>{{ $patient->keterangan }}</td>
                         <td>
-                            @if($patient->photo)
-                                @php
-                                    $photoPath = storage_path('app/public/photos/' . $patient->photo);
-                                    echo "Photo path: " . $photoPath;
-                                @endphp
-                                @if(file_exists($photoPath))
-                                    <a href="{{ asset('storage/photos/' . $patient->photo) }}" target="_blank" class="btn btn-link">Lihat Foto</a>
-                                @else
-                                    Foto tidak ditemukan
-                                @endif
-                            @else
-                                Tidak ada foto
-                            @endif
-
+                            <a href="{{ route('photo.show', ['filename' => $patient->photo]) }}" target="_blank" class="btn btn-link">Lihat Foto</a>
                         </td>
                         <td>
                             <a href="{{ route('admin.pasien.edit', $patient->id) }}" class="btn btn-success btn-sm">Edit</a>
