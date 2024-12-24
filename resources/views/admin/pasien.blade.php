@@ -80,7 +80,12 @@
                         <td>{{ $patient->keterangan }}</td>
                         <td>
                             @if($patient->photo)
-                                <a href="{{ asset('storage/' . $patient->photo) }}" target="_blank">Lihat Foto</a>
+                                @php
+                                    $photoUrl = app()->environment('local')
+                                        ? asset('storage/' . $patient->photo)
+                                        : url('photos/' . basename($patient->photo));
+                                @endphp
+                                <a href="{{ $photoUrl }}" target="_blank">Lihat Foto</a>
                             @else
                                 Tidak ada foto
                             @endif
@@ -93,7 +98,7 @@
                         </td>
                     </tr>
                 @endforeach
-            </tbody>
+            </tbody>            
         </table>
     </div>
 
