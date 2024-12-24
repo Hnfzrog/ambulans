@@ -81,11 +81,9 @@
                         <td>
                             @if($patient->photo)
                                 @php
-                                    $photoUrl = app()->environment('local')
-                                        ? asset('storage/' . $patient->photo)
-                                        : url('photos/' . basename($patient->photo));
+                                    $photoPath = 'storage/photos/' . basename($patient->photo);
                                 @endphp
-                                <a href="{{ $photoUrl }}" target="_blank">Lihat Foto</a>
+                                <a href="{{ asset($photoPath) }}" target="_blank">Lihat Foto</a>
                             @else
                                 Tidak ada foto
                             @endif
@@ -98,7 +96,8 @@
                         </td>
                     </tr>
                 @endforeach
-            </tbody>            
+            </tbody>
+                      
         </table>
     </div>
 
