@@ -80,15 +80,7 @@
                         <td>{{ $patient->keterangan }}</td>
                         <td>
                             @if($patient->photo)
-                                @php
-                                    // Assuming photo path is stored as 'photos/filename.png' in the database
-                                    $photoPath = 'storage/photos/' . basename($patient->photo);
-                                    // Determine full URL based on environment
-                                    $photoUrl = app()->environment('local') 
-                                        ? asset($photoPath) 
-                                        : url($photoPath);
-                                @endphp
-                                <a href="{{ $photoUrl }}" target="_blank">Lihat Foto</a>
+                            <a href="{{ asset('storage/' . $patient->photo) }}" target="_blank" class="btn btn-link">Lihat Foto</a>
                             @else
                                 Tidak ada foto
                             @endif
